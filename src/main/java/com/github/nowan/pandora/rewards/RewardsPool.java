@@ -4,18 +4,18 @@ import java.util.Collection;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class RewardPool {
+public class RewardsPool {
     public Reward[] items;
 
-    public RewardPool(Reward... rewards) {
+    public RewardsPool(Reward... rewards) {
         this.items = rewards;
     }
 
-    public static RewardPool ofEntries(Entry... entries) {
+    public static RewardsPool ofEntries(Entry... entries) {
         Objects.requireNonNull(entries);
         Reward[] rewards = Arrays.stream(entries).flatMap((entry) -> Arrays.stream(entry.rewards)).toArray(Reward[]::new);
 
-        return new RewardPool(rewards);
+        return new RewardsPool(rewards);
     }
 
     public static Entry entry(Reward reward) {

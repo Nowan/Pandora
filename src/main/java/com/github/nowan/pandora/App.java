@@ -1,25 +1,32 @@
 package com.github.nowan.pandora;
 
-import com.github.nowan.pandora.rewards.Reward;
-import com.github.nowan.pandora.rewards.RewardPool;
-import static com.github.nowan.pandora.rewards.RewardPool.entry;
-
-import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class App
 {
     public static void main( String[] args )
     {
-        RewardPool rewardPool = RewardPool.ofEntries(
-                entry(Collections.nCopies(5, Reward.GAIN_MONEY_5)),
-                entry(Collections.nCopies(2, Reward.GAIN_MONEY_20)),
-                entry(Collections.nCopies(3, Reward.LOSE_LIFE_1)),
-                entry(Reward.GAIN_MONEY_100),
-                entry(Reward.GAIN_LIFE_1)
-        );
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        try{
+            for (int i = 0; i < 10000; i++){
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Game game = new Game();
+                        game.start();
 
-        for (Reward reward : rewardPool.items) {
-            System.out.println(reward);
+                        while(!game.isOver()) {
+                            game.pickReward(game.rewardsToPick.get(0));
+                        }
+
+                        System.out.println(game.wonAmount.toString());
+                    }
+                });
+            }
+        } catch(Exception err){
+            err.printStackTrace();
         }
+        executor.shutdown();
     }
 }
