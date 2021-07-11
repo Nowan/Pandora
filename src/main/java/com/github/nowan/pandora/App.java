@@ -1,25 +1,32 @@
 package com.github.nowan.pandora;
 
-import com.github.nowan.pandora.rewards.Reward;
-import com.github.nowan.pandora.rewards.RewardPool;
-import static com.github.nowan.pandora.rewards.RewardPool.entry;
-
-import java.util.Collections;
+import com.github.nowan.pandora.events.Event;
+import com.github.nowan.pandora.events.EventPayload;
 
 public class App
 {
+    private static Game game;
+
     public static void main( String[] args )
     {
-        RewardPool rewardPool = RewardPool.ofEntries(
-                entry(Collections.nCopies(5, Reward.GAIN_MONEY_5)),
-                entry(Collections.nCopies(2, Reward.GAIN_MONEY_20)),
-                entry(Collections.nCopies(3, Reward.LOSE_LIFE_1)),
-                entry(Reward.GAIN_MONEY_100),
-                entry(Reward.GAIN_LIFE_1)
-        );
+        game = new Game();
 
-        for (Reward reward : rewardPool.items) {
-            System.out.println(reward);
-        }
+        game.on(Event.ROUND_START, App::onPickAvailable);
+        game.on(Event.ROUND_END, App::onRoundEnd);
+        game.on(Event.GAME_OVER, App::onGameOver);
+
+        game.start();
+    }
+
+    private static void onPickAvailable(EventPayload<?> eventPayload) {
+        System.out.println(eventPayload);
+    }
+
+    private static void onGameOver(EventPayload<?> eventPayload) {
+        System.out.println(eventPayload);
+    }
+
+    private static void onRoundEnd(EventPayload<?> eventPayload) {
+        System.out.println(eventPayload);
     }
 }
