@@ -38,7 +38,7 @@ public class App
         System.out.println(wonAmount);
     }
 
-    private static RewardsPool rewardsPool = RewardsPool.ofEntries(
+    private static final RewardsPool rewardsPool = RewardsPool.ofEntries(
             entry(Collections.nCopies(5, Reward.GAIN_MONEY_5)),
             entry(Collections.nCopies(2, Reward.GAIN_MONEY_20)),
             entry(Collections.nCopies(3, Reward.LOSE_LIFE_1)),
