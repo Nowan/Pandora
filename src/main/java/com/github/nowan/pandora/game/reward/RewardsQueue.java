@@ -1,4 +1,4 @@
-package com.github.nowan.pandora.rewards;
+package com.github.nowan.pandora.game.reward;
 
 import java.util.Arrays;
 import java.util.Collections;

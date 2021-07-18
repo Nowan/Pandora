@@ -1,4 +1,4 @@
-package com.github.nowan.pandora.rewards;
+package com.github.nowan.pandora.game.reward;
 
 import java.util.Collection;
 import java.util.Arrays;
@@ -6,7 +6,6 @@ import java.util.Objects;
 
 public class RewardsPool {
     public Reward[] items;
-
     public RewardsPool(Reward... rewards) {
         this.items = rewards;
     }

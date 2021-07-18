@@ -1,32 +1,48 @@
 package com.github.nowan.pandora;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import com.github.nowan.pandora.game.config.GameConfig;
+import com.github.nowan.pandora.game.Game;
+import com.github.nowan.pandora.game.command.PickCommand;
+import com.github.nowan.pandora.game.event.Event;
+import com.github.nowan.pandora.game.reward.Reward;
+import com.github.nowan.pandora.game.reward.RewardsPool;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+
+import static com.github.nowan.pandora.game.reward.RewardsPool.entry;
 
 public class App
 {
     public static void main( String[] args )
     {
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        try{
-            for (int i = 0; i < 10000; i++){
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        Game game = new Game();
-                        game.start();
+        Game game = new Game(GameConfig.builder()
+                .withRewardsPool(rewardsPool)
+                .withLastChanceTries(1)
+                .withInitialLifeCount(1)
+                .withPickOptionsAmount(12)
+                .build()
+        );
 
-                        while(!game.isOver()) {
-                            game.pickReward(game.rewardsToPick.get(0));
-                        }
+        game.on(Event.PICK_READY, (Object pickCommand) -> onPickReady((PickCommand) pickCommand));
+        game.on(Event.GAME_OVER, (Object wonAmount) -> onGameOver((BigDecimal) wonAmount));
 
-                        System.out.println(game.wonAmount.toString());
-                    }
-                });
-            }
-        } catch(Exception err){
-            err.printStackTrace();
-        }
-        executor.shutdown();
+        game.start();
     }
+
+    private static void onPickReady(PickCommand pickCommand) {
+        pickCommand.resolve(pickCommand.options.get(0));
+    }
+
+    private static void onGameOver(BigDecimal wonAmount) {
+        System.out.println(wonAmount);
+    }
+
+    private static RewardsPool rewardsPool = RewardsPool.ofEntries(
+            entry(Collections.nCopies(5, Reward.GAIN_MONEY_5)),
+            entry(Collections.nCopies(2, Reward.GAIN_MONEY_20)),
+            entry(Collections.nCopies(3, Reward.LOSE_LIFE_1)),
+            entry(Reward.GAIN_MONEY_100),
+            entry(Reward.GAIN_LIFE_1)
+    );
 }

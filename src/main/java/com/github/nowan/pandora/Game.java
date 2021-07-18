@@ -1,14 +1,14 @@
 package com.github.nowan.pandora;
 
-import com.github.nowan.pandora.rewards.Reward;
-import com.github.nowan.pandora.rewards.RewardsPool;
-import com.github.nowan.pandora.rewards.RewardsQueue;
+import com.github.nowan.pandora.game.reward.Reward;
+import com.github.nowan.pandora.game.reward.RewardsPool;
+import com.github.nowan.pandora.game.reward.RewardsQueue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.github.nowan.pandora.rewards.RewardsPool.entry;
+import static com.github.nowan.pandora.game.reward.RewardsPool.entry;
 
 public class Game {
     private final RewardsQueue rewardsQueue = new RewardsQueue(RewardsPool.ofEntries(
