@@ -1,4 +1,4 @@
-package com.github.nowan.pandora.config;
+package com.github.nowan.pandora.game.config;
 
 import com.github.nowan.pandora.game.reward.RewardsPool;
 

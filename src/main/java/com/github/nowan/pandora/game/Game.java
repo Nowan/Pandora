@@ -1,6 +1,6 @@
 package com.github.nowan.pandora.game;
 
-import com.github.nowan.pandora.config.GameConfig;
+import com.github.nowan.pandora.game.config.GameConfig;
 import com.github.nowan.pandora.eventemitter.EventEmitter;
 import com.github.nowan.pandora.game.command.PickCommand;
 import com.github.nowan.pandora.game.event.Event;
@@ -44,6 +44,10 @@ public class Game extends EventEmitter<Event> {
         this.emit(Event.PICK_READY, command);
     }
 
+    private void endGame() {
+        this.emit(Event.GAME_OVER, this.state.getWonAmount());
+    }
+
     private void onPlayerPick(PickOption pickedOption) {
         resolvePlayerChoice(pickedOption);
 
@@ -51,7 +55,7 @@ public class Game extends EventEmitter<Event> {
             startNextRound();
         }
         else {
-            this.emit(Event.GAME_OVER, this.state.getWonAmount());
+            endGame();
         }
     }
 
@@ -60,26 +64,37 @@ public class Game extends EventEmitter<Event> {
 
         switch (reward.type) {
             case GAIN_MONEY:
-                this.state.setWonAmount(this.state.getWonAmount().add((BigDecimal) reward.amount));
+                resolveGainMoney(reward);
                 break;
             case GAIN_LIFE:
-                this.state.setLifeCount(this.state.getLifeCount() + (Integer) reward.amount);
+                resolveGainLife(reward);
                 break;
             case LOSE_LIFE:
-                int nextLifeCount = this.state.getLifeCount() - (Integer) reward.amount;
-
-                if (nextLifeCount <= 0) {
-                    if (this.state.getLastChanceTries() > 0) {
-                        this.state.setLastChanceTries(this.state.getLastChanceTries() - 1);
-                        nextLifeCount = 1;
-                    }
-                }
-
-                this.state.setLifeCount(nextLifeCount);
-
+                resolveLoseLife(reward);
                 break;
         }
 
         this.state.getPickOptions().remove(pickedOption);
+    }
+
+    private void resolveGainMoney(Reward reward) {
+        this.state.setWonAmount(this.state.getWonAmount().add((BigDecimal) reward.amount));
+    }
+
+    private void resolveGainLife(Reward reward) {
+        this.state.setLifeCount(this.state.getLifeCount() + (Integer) reward.amount);
+    }
+
+    private void resolveLoseLife(Reward reward) {
+        int nextLifeCount = this.state.getLifeCount() - (Integer) reward.amount;
+
+        if (nextLifeCount <= 0) {
+            if (this.state.getLastChanceTries() > 0) {
+                this.state.setLastChanceTries(this.state.getLastChanceTries() - 1);
+                nextLifeCount = 1;
+            }
+        }
+
+        this.state.setLifeCount(nextLifeCount);
     }
 }
