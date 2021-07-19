@@ -4,13 +4,18 @@ import com.github.nowan.pandora.game.gameplay.PickOption;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GameState {
     private BigDecimal wonAmount = BigDecimal.ZERO;
     private int lifeCount = 1;
     private int lastChanceTries = 0;
-    private List<PickOption> pickOptions = new ArrayList<>();
+    private final List<PickOption> pickOptions;
+
+    public GameState(List<PickOption> pickOptions) {
+        this.pickOptions = Collections.synchronizedList(pickOptions);
+    }
 
     public BigDecimal getWonAmount() {
         return wonAmount;
@@ -77,11 +82,10 @@ public class GameState {
         }
 
         public GameState build() {
-            GameState config = new GameState();
+            GameState config = new GameState(this.pickOptions);
             config.wonAmount = this.wonAmount;
             config.lifeCount = this.lifeCount;
             config.lastChanceTries = this.lastChanceTries;
-            config.pickOptions = this.pickOptions;
             return config;
         }
     }

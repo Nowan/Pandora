@@ -6,31 +6,29 @@ import com.github.nowan.pandora.game.command.PickCommand;
 import com.github.nowan.pandora.game.event.Event;
 import com.github.nowan.pandora.game.gameplay.PickOption;
 import com.github.nowan.pandora.game.reward.Reward;
-import com.github.nowan.pandora.game.reward.RewardsQueue;
 import com.github.nowan.pandora.game.state.GameState;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Game extends EventEmitter<Event> {
-    private GameConfig config;
-    private GameState state;
+    private final GameConfig config;
+    private final GameState state;
 
     public Game(GameConfig config) {
         super(Event.class);
 
-        var rewardsQueue = new RewardsQueue(config.getRewardsPool());
+        var pickOptions = Arrays.stream(config.getRewardsPool().items).map(PickOption::new).collect(Collectors.toList());
+        Collections.shuffle(pickOptions);
 
         this.config = config;
         this.state = GameState.builder()
                 .withWonAmount(BigDecimal.ZERO)
                 .withLifeCount(config.getInitialLifeCount())
                 .withLastChanceTries(config.getLastChanceTries())
-                .withPickOptions(Stream.generate(rewardsQueue::next)
-                        .limit(config.getPickOptionsAmount())
-                        .map(PickOption::new)
-                        .collect(Collectors.toList()))
+                .withPickOptions(pickOptions)
                 .build();
     }
 

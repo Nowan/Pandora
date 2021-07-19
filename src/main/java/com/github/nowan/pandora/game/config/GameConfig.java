@@ -6,7 +6,6 @@ public class GameConfig {
     private int initialLifeCount;
     private int lastChanceTries;
     private RewardsPool rewardsPool;
-    private int pickOptionsAmount;
 
     public int getInitialLifeCount() {
         return initialLifeCount;
@@ -20,10 +19,6 @@ public class GameConfig {
         return rewardsPool;
     }
 
-    public int getPickOptionsAmount() {
-        return pickOptionsAmount;
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -32,7 +27,6 @@ public class GameConfig {
         private int initialLifeCount = 1;
         private int lastChanceTries = 1;
         private RewardsPool rewardsPool = new RewardsPool();
-        private int pickOptionsAmount = rewardsPool.items.length;
 
         public Builder withRewardsPool(RewardsPool rewardsPool) {
             this.rewardsPool = rewardsPool;
@@ -49,17 +43,11 @@ public class GameConfig {
             return this;
         }
 
-        public Builder withPickOptionsAmount(int pickOptionsAmount) {
-            this.pickOptionsAmount = pickOptionsAmount;
-            return this;
-        }
-
         public GameConfig build() {
             GameConfig config = new GameConfig();
             config.initialLifeCount = this.initialLifeCount;
             config.lastChanceTries = this.lastChanceTries;
             config.rewardsPool = this.rewardsPool;
-            config.pickOptionsAmount = this.pickOptionsAmount;
             return config;
         }
     }

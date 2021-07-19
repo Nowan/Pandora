@@ -5,12 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class RewardsQueue {
-    private final RewardsPool rewardsPool;
     private final List<Reward> items;
     private int head = 0;
 
     public RewardsQueue(RewardsPool rewardsPool) {
-        this.rewardsPool = rewardsPool;
         this.items = Arrays.asList(rewardsPool.items);
     }
 
