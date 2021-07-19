@@ -33,9 +33,10 @@ public class App
 
     private static void runGame() {
         Game game = new Game(GameConfig.builder()
-                .withRewardsPool(rewardsPool)
+                .withMainRewardsPool(mainRewardsPool)
+                .withLastChanceRewardsPool(lastChanceRewardsPool)
+                .withConsolationRewardsPool(consolationRewardsPool)
                 .withInitialLifeCount(1)
-                .withLastChanceTries(1)
                 .build());
 
         game.on(Event.PICK_READY, (Object pickCommand) -> onPickReady((PickCommand) pickCommand));
@@ -52,11 +53,24 @@ public class App
         System.out.println(wonAmount);
     }
 
-    private static final RewardsPool rewardsPool = RewardsPool.ofEntries(
+    private static final RewardsPool mainRewardsPool = RewardsPool.ofEntries(
             entry(Collections.nCopies(5, Reward.GAIN_MONEY_5)),
             entry(Collections.nCopies(2, Reward.GAIN_MONEY_20)),
             entry(Collections.nCopies(3, Reward.LOSE_LIFE_1)),
             entry(Reward.GAIN_MONEY_100),
             entry(Reward.GAIN_LIFE_1)
+    );
+
+    private static final RewardsPool lastChanceRewardsPool = RewardsPool.ofEntries(
+            entry(Reward.GAIN_MONEY_5),
+            entry(Reward.GAIN_MONEY_10),
+            entry(Reward.GAIN_MONEY_20),
+            entry(Reward.GAIN_LIFE_1)
+    );
+
+    private static final RewardsPool consolationRewardsPool = RewardsPool.ofEntries(
+            entry(Reward.GAIN_MONEY_5),
+            entry(Reward.GAIN_MONEY_10),
+            entry(Reward.GAIN_MONEY_20)
     );
 }

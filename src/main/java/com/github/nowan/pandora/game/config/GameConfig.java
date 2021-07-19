@@ -4,19 +4,24 @@ import com.github.nowan.pandora.game.reward.RewardsPool;
 
 public class GameConfig {
     private int initialLifeCount;
-    private int lastChanceTries;
-    private RewardsPool rewardsPool;
+    private RewardsPool mainRewardsPool;
+    private RewardsPool consolationRewardsPool;
+    private RewardsPool lastChanceRewardsPool;
 
     public int getInitialLifeCount() {
         return initialLifeCount;
     }
 
-    public int getLastChanceTries() {
-        return lastChanceTries;
+    public RewardsPool getMainRewardsPool() {
+        return mainRewardsPool;
     }
 
-    public RewardsPool getRewardsPool() {
-        return rewardsPool;
+    public RewardsPool getConsolationRewardsPool() {
+        return consolationRewardsPool;
+    }
+
+    public RewardsPool getLastChanceRewardsPool() {
+        return lastChanceRewardsPool;
     }
 
     public static Builder builder() {
@@ -25,16 +30,22 @@ public class GameConfig {
 
     public static class Builder {
         private int initialLifeCount = 1;
-        private int lastChanceTries = 1;
-        private RewardsPool rewardsPool = new RewardsPool();
+        private RewardsPool mainRewardsPool = new RewardsPool();
+        private RewardsPool consolationRewardsPool = new RewardsPool();
+        private RewardsPool lastChanceRewardsPool = new RewardsPool();
 
-        public Builder withRewardsPool(RewardsPool rewardsPool) {
-            this.rewardsPool = rewardsPool;
+        public Builder withMainRewardsPool(RewardsPool rewardsPool) {
+            this.mainRewardsPool = rewardsPool;
             return this;
         }
 
-        public Builder withLastChanceTries(int lastChanceTries) {
-            this.lastChanceTries = lastChanceTries;
+        public Builder withConsolationRewardsPool(RewardsPool rewardsPool) {
+            this.consolationRewardsPool = rewardsPool;
+            return this;
+        }
+
+        public Builder withLastChanceRewardsPool(RewardsPool rewardsPool) {
+            this.lastChanceRewardsPool = rewardsPool;
             return this;
         }
 
@@ -46,8 +57,9 @@ public class GameConfig {
         public GameConfig build() {
             GameConfig config = new GameConfig();
             config.initialLifeCount = this.initialLifeCount;
-            config.lastChanceTries = this.lastChanceTries;
-            config.rewardsPool = this.rewardsPool;
+            config.mainRewardsPool = this.mainRewardsPool;
+            config.consolationRewardsPool = this.consolationRewardsPool;
+            config.lastChanceRewardsPool = this.lastChanceRewardsPool;
             return config;
         }
     }

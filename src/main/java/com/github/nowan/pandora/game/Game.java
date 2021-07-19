@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Game extends EventEmitter<Event> {
@@ -26,8 +27,8 @@ public class Game extends EventEmitter<Event> {
         this.state = GameState.builder()
                 .withWonAmount(BigDecimal.ZERO)
                 .withLifeCount(config.getInitialLifeCount())
-                .withLastChanceTries(config.getLastChanceTries())
-                .withPickOptions(generatePickOptions(config.getRewardsPool()))
+                .withPickOptions(generatePickOptions(config.getMainRewardsPool()))
+                .withLastChanceActive(true)
                 .build();
     }
 
@@ -46,9 +47,10 @@ public class Game extends EventEmitter<Event> {
     }
 
     private void onPlayerPick(PickOption pickedOption) {
-        resolvePlayerChoice(pickedOption);
+        resolveReward(pickedOption.getReward());
 
         if (this.state.getLifeCount() > 0) {
+            this.state.getPickOptions().remove(pickedOption);
             startNextRound();
         }
         else {
@@ -56,9 +58,7 @@ public class Game extends EventEmitter<Event> {
         }
     }
 
-    private void resolvePlayerChoice(PickOption pickedOption) {
-        Reward reward = pickedOption.getReward();
-
+    private void resolveReward(Reward reward) {
         switch (reward.type) {
             case GAIN_MONEY:
                 resolveGainMoney(reward);
@@ -70,8 +70,6 @@ public class Game extends EventEmitter<Event> {
                 resolveLoseLife(reward);
                 break;
         }
-
-        this.state.getPickOptions().remove(pickedOption);
     }
 
     private void resolveGainMoney(Reward reward) {
@@ -83,14 +81,24 @@ public class Game extends EventEmitter<Event> {
     }
 
     private void resolveLoseLife(Reward reward) {
-        int nextLifeCount = state.getLifeCount() - (Integer) reward.amount;
+        state.setLifeCount(state.getLifeCount() - (Integer) reward.amount);
 
-        if (nextLifeCount <= 0 && state.getLastChanceTries() > 0) {
-            nextLifeCount = 1;
-            state.setLastChanceTries(state.getLastChanceTries() - 1);
+        if (state.getLifeCount() <= 0) {
+            var rewardsPool = state.isLastChanceActive() ? config.getLastChanceRewardsPool() : config.getConsolationRewardsPool();
+            var lastChanceReward = pickRandomReward(rewardsPool);
+            
+            resolveReward(lastChanceReward);
+            if (lastChanceReward.type == Reward.Type.GAIN_LIFE) {
+                this.state.setLastChanceUsed(true);
+                this.state.setPickOptions(generatePickOptions(this.config.getMainRewardsPool()));
+            }
         }
+    }
 
-        state.setLifeCount(nextLifeCount);
+    private Reward pickRandomReward(RewardsPool rewardsPool) {
+        Random rand = new Random();
+
+        return rewardsPool.items[rand.nextInt(rewardsPool.items.length)];
     }
 
     private List<PickOption> generatePickOptions(RewardsPool rewardsPool) {

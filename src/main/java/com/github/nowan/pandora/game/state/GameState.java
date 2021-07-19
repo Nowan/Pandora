@@ -10,8 +10,8 @@ import java.util.List;
 public class GameState {
     private BigDecimal wonAmount = BigDecimal.ZERO;
     private int lifeCount = 1;
-    private int lastChanceTries = 0;
-    private final List<PickOption> pickOptions;
+    private boolean lastChanceUsed = false;
+    private List<PickOption> pickOptions;
 
     public GameState(List<PickOption> pickOptions) {
         this.pickOptions = Collections.synchronizedList(pickOptions);
@@ -33,16 +33,20 @@ public class GameState {
         this.lifeCount = lifeCount;
     }
 
-    public int getLastChanceTries() {
-        return lastChanceTries;
-    }
-
-    public void setLastChanceTries(int lastChanceTries) {
-        this.lastChanceTries = lastChanceTries;
-    }
-
     public List<PickOption> getPickOptions() {
         return pickOptions;
+    }
+
+    public void setPickOptions(List<PickOption> pickOptions) {
+        this.pickOptions = pickOptions;
+    }
+
+    public boolean isLastChanceActive() {
+        return !lastChanceUsed;
+    }
+
+    public void setLastChanceUsed(boolean lastChanceUsed) {
+        this.lastChanceUsed = lastChanceUsed;
     }
 
     public static GameState.Builder builder() {
@@ -50,16 +54,10 @@ public class GameState {
     }
 
     public static class Builder {
-        private BigDecimal wonAmount;
-        private int lifeCount;
-        private int lastChanceTries;
+        private BigDecimal wonAmount = BigDecimal.ZERO;
+        private int lifeCount = 1;
+        private boolean lastChanceUsed = false;
         private List<PickOption> pickOptions = new ArrayList<>();
-
-        public Builder() {
-            this.wonAmount = BigDecimal.ZERO;
-            this.lifeCount = 1;
-            this.lastChanceTries = 0;
-        }
 
         public Builder withWonAmount(BigDecimal wonAmount) {
             this.wonAmount = wonAmount;
@@ -71,13 +69,13 @@ public class GameState {
             return this;
         }
 
-        public Builder withLastChanceTries(int lastChanceTries) {
-            this.lastChanceTries = lastChanceTries;
+        public Builder withPickOptions(List<PickOption> rewards) {
+            this.pickOptions = rewards;
             return this;
         }
 
-        public Builder withPickOptions(List<PickOption> rewards) {
-            this.pickOptions = rewards;
+        public Builder withLastChanceActive(boolean isLastChanceActive) {
+            this.lastChanceUsed = !isLastChanceActive;
             return this;
         }
 
@@ -85,7 +83,6 @@ public class GameState {
             GameState config = new GameState(this.pickOptions);
             config.wonAmount = this.wonAmount;
             config.lifeCount = this.lifeCount;
-            config.lastChanceTries = this.lastChanceTries;
             return config;
         }
     }
