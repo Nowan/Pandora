@@ -16,11 +16,13 @@ import static com.github.nowan.pandora.game.reward.RewardsPool.entry;
 
 public class App
 {
+    public static final int ITERATIONS_COUNT = 10000;
+
     public static void main( String[] args )
     {
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         try{
-            for (int i = 0; i < 10000; i++) {
+            for (int i = 0; i < ITERATIONS_COUNT; i++) {
                 executor.execute(App::runGame);
             }
         } catch(Exception err){
@@ -34,8 +36,7 @@ public class App
                 .withRewardsPool(rewardsPool)
                 .withInitialLifeCount(1)
                 .withLastChanceTries(1)
-                .build()
-        );
+                .build());
 
         game.on(Event.PICK_READY, (Object pickCommand) -> onPickReady((PickCommand) pickCommand));
         game.on(Event.GAME_OVER, (Object wonAmount) -> onGameOver((BigDecimal) wonAmount));

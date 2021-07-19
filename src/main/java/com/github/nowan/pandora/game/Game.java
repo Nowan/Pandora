@@ -6,11 +6,13 @@ import com.github.nowan.pandora.game.command.PickCommand;
 import com.github.nowan.pandora.game.event.Event;
 import com.github.nowan.pandora.game.gameplay.PickOption;
 import com.github.nowan.pandora.game.reward.Reward;
+import com.github.nowan.pandora.game.reward.RewardsPool;
 import com.github.nowan.pandora.game.state.GameState;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Game extends EventEmitter<Event> {
@@ -20,15 +22,12 @@ public class Game extends EventEmitter<Event> {
     public Game(GameConfig config) {
         super(Event.class);
 
-        var pickOptions = Arrays.stream(config.getRewardsPool().items).map(PickOption::new).collect(Collectors.toList());
-        Collections.shuffle(pickOptions);
-
         this.config = config;
         this.state = GameState.builder()
                 .withWonAmount(BigDecimal.ZERO)
                 .withLifeCount(config.getInitialLifeCount())
                 .withLastChanceTries(config.getLastChanceTries())
-                .withPickOptions(pickOptions)
+                .withPickOptions(generatePickOptions(config.getRewardsPool()))
                 .build();
     }
 
@@ -84,15 +83,19 @@ public class Game extends EventEmitter<Event> {
     }
 
     private void resolveLoseLife(Reward reward) {
-        int nextLifeCount = this.state.getLifeCount() - (Integer) reward.amount;
+        int nextLifeCount = state.getLifeCount() - (Integer) reward.amount;
 
-        if (nextLifeCount <= 0) {
-            if (this.state.getLastChanceTries() > 0) {
-                this.state.setLastChanceTries(this.state.getLastChanceTries() - 1);
-                nextLifeCount = 1;
-            }
+        if (nextLifeCount <= 0 && state.getLastChanceTries() > 0) {
+            nextLifeCount = 1;
+            state.setLastChanceTries(state.getLastChanceTries() - 1);
         }
 
-        this.state.setLifeCount(nextLifeCount);
+        state.setLifeCount(nextLifeCount);
+    }
+
+    private List<PickOption> generatePickOptions(RewardsPool rewardsPool) {
+        var pickOptions = Arrays.stream(rewardsPool.items).map(PickOption::new).collect(Collectors.toList());
+        Collections.shuffle(pickOptions);
+        return pickOptions;
     }
 }
